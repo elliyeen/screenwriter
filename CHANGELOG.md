@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+- Screenplay columns set to the common industry numbers: character cue at 3.7", parenthetical at 3.1"; page number flush with the right margin
+- Added CLAUDE.md for Claude Code
+
 ## 0.6.2
 - Change a script's cover color (card menu or details panel); saved to the account
 - Removed the sidebar illustration

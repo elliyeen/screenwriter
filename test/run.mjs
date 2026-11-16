@@ -64,8 +64,8 @@ test("layout: auto (CONT'D) after action", () => {
 test('layout: column positions match industry grid', () => {
   const find = (txt) => res.pages.flatMap((p) => p.lines).find((l) => l.runs.map((r) => r.t).join('') === txt);
   assert.equal(find('INT. PICKUP TRUCK - DAY').col, 15);
-  assert.equal(find('NOAH').col, 35);
-  assert.equal(find('(tapping the dashboard)').col, 30);
+  assert.equal(find('NOAH').col, 37);
+  assert.equal(find('(tapping the dashboard)').col, 31);
   assert.equal(find('You said that twenty minutes ago.').col, 25);
   assert.equal(find('CUT TO:').col + 'CUT TO:'.length, 75);
 });

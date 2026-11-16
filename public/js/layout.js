@@ -8,10 +8,10 @@ export const L = {
   LINES: 54, // 9in of text area / 12pt
   ACTION: { col: 15, w: 60 }, // 1.5in left, 6.0in wide
   DIALOGUE: { col: 25, w: 35 }, // 2.5in, 3.5in wide
-  PAREN: { col: 30, w: 25 }, // 3.0in
-  CUE: { col: 35 }, // 3.5in
+  PAREN: { col: 31, w: 25 }, // 3.1in from the page edge, ends at 5.6in
+  CUE: { col: 37 }, // 3.7in from the page edge (2.2in from the margin)
   RIGHT: 75, // 7.5in right edge
-  PAGE_NUM_END: 72.5, // 7.25in
+  PAGE_NUM_END: 75, // top right, flush with the right margin, 0.5in from the top
 };
 
 const runLen = (runs) => runs.reduce((n, r) => n + r.t.length, 0);

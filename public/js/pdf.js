@@ -1,3 +1,4 @@
+import { L } from './layout.js';
 // Minimal PDF writer for screenplays. No dependencies.
 // Uses the built-in Courier family (always available in every PDF reader),
 // so the file is tiny and prints exactly on the industry grid.
@@ -43,7 +44,7 @@ function pageStream(page) {
   for (const ln of page.lines) text(ln.runs, ln.col, ln.row);
   if (page.showNumber) {
     const label = page.number + '.';
-    const x = 72.5 * CW - label.length * CW;
+    const x = L.PAGE_NUM_END * CW - label.length * CW;
     s += `BT /F1 12 Tf 1 0 0 1 ${f2(x)} ${f2(792 - 36 - 9)} Tm ${pdfString(label)} Tj ET\n`;
   }
   return s;

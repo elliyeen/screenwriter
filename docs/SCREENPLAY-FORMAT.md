@@ -7,11 +7,11 @@ Studio layout on US Letter, Courier 12pt (10 characters per inch, 6 lines per in
 | Page | 1.5" left margin, 1" right, 1" top and bottom | 54 lines of text per page | |
 | Scene heading | 15 | 60 | Capitals. Optional bold and scene numbers. |
 | Action | 15 | 60 | |
-| Character cue | 35 | | Capitals. `(CONT'D)` added when the same character continues. |
-| Parenthetical | 30 | 25 | |
+| Character cue | 37 (3.7") | | Capitals. `(CONT'D)` added when the same character continues. |
+| Parenthetical | 31 (3.1") | 25 | |
 | Dialogue | 25 | 35 | |
 | Transition | right aligned at 75 | | Example: CUT TO: |
-| Page number | top right from page 2 | | `2.` style |
+| Page number | top right, flush with the right margin (7.5"), 0.5" from the top, from page 2 | | `2.` style |
 
 Columns are counted from the paper's left edge in characters.
 

@@ -1,5 +1,5 @@
 import { parse } from './fountain.js';
-import { layoutScript } from './layout.js';
+import { layoutScript, L as GRID } from './layout.js';
 import { writePdf } from './pdf.js';
 import { SAMPLE } from './sample.js';
 import { api } from './cloud.js';
@@ -622,7 +622,7 @@ function pageHtml(p) {
   for (const ln of p.lines) h += `<div class="ln" style="left:${pct((ln.col * 7.2) / 612)};top:${pct((72 + 12 * ln.row) / 792)}">${runsHtml(ln.runs)}</div>`;
   if (p.showNumber) {
     const label = p.number + '.';
-    h += `<div class="pn" style="left:${pct((72.5 * 7.2 - label.length * 7.2) / 612)};top:${pct(36 / 792)}">${label}</div>`;
+    h += `<div class="pn" style="left:${pct((GRID.PAGE_NUM_END * 7.2 - label.length * 7.2) / 612)};top:${pct(36 / 792)}">${label}</div>`;
   }
   return h + '</div></div>';
 }

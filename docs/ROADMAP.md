@@ -18,6 +18,8 @@
 | High | Verify on live Cloudflare, Safari, Firefox, and real phones | Not tested yet |
 | High | Backup restore drill and a restore tool | Steps are documented, not yet rehearsed |
 | High | Security hardening list in [SECURITY.md](SECURITY.md) | Atomic rate limits, device list, backup encryption |
+| High | Page-style editor (WYSIWYG): the Write pane is a plain Fountain text box today | Largest gap vs. professional tools |
+| High | Format audit against Final Draft output by a professional reader | Sources differ by about 0.1" |
 | High | Structure tab: beat sheet, page targets, guided questions | Planned core feature, not built |
 | Medium | Embed Courier Prime in exported PDFs | Today the PDF uses standard Courier (same widths) |
 | Medium | Collaborator cursors and comments | You see who is present, not where they are |

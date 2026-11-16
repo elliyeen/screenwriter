@@ -103,6 +103,14 @@ with sync_playwright() as pw:
     check('New Script creates scripts', p.locator('.scard').count() == 3, p.locator('.scard .ct').all_inner_texts())
     check('page count and type on card', 'TV Series • 1 page' in p.inner_text('.scard:has-text("Night Shift")'))
 
+    # ---- page numbers and industry columns in the on-screen preview ----
+    p.click('.scard:has-text("Paper Boats")'); p.click('#dOpen'); p.wait_for_timeout(400)
+    p.click('#editor'); p.keyboard.press('Control+End'); p.keyboard.insert_text('\n\n' + '\n\n'.join('Someone waits and listens to the quiet room number %d for a long while.' % i for i in range(60)) + '\n\nNOAH\n(quietly)\nHello there.\n')
+    p.wait_for_timeout(800); p.click('[data-view=pages]') if p.locator('[data-view=pages]').count() else None; p.wait_for_timeout(500)
+    pn = p.evaluate("(() => { const n = document.querySelector('.pn'); if (!n) return null; const pg = n.closest('.page').getBoundingClientRect(), r = n.getBoundingClientRect(); return (r.right - pg.left) / pg.width * 8.5; })()")
+    check('page number sits at the right margin (7.5in) in the preview', pn is not None and abs(pn - 7.5) < 0.08, pn)
+    p.click('[data-view=split]'); p.click('#btnHome'); p.wait_for_timeout(400)
+
     # ---- change cover ----
     p.click('.scard:has-text("Night Shift") .dots'); p.click('#ctx [data-act=cover]'); p.wait_for_timeout(200)
     p.click('#ctx .sw[aria-label=Orange]'); p.wait_for_timeout(1500)
