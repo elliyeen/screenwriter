@@ -1,0 +1,19 @@
+{
+  "name": "screenwriter",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/run.mjs && node test/ot.test.mjs && node test/access.test.mjs && node test/import.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute screenwriter --local --file=schema.sql",
+    "db:remote": "wrangler d1 execute screenwriter --remote --file=schema.sql",
+    "test:e2e": "python3 test/e2e.py"
+  },
+  "devDependencies": {
+    "axe-core": "^4.14.1",
+    "pdfjs-dist": "^6.5.438",
+    "wrangler": "^4.163.0"
+  }
+}

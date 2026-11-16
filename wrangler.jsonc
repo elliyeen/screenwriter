@@ -1,0 +1,32 @@
+{
+  "name": "screenwriter",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "screenwriter",
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "ROOMS", "class_name": "ScriptRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ScriptRoom"] }],
+  // Nightly backup at 09:00 UTC into separate storage. Create the bucket first:
+  //   npx wrangler r2 bucket create screenwriter-backups
+  "triggers": { "crons": ["0 9 * * *"] },
+  "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "screenwriter-backups" }],
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    // Who the sign-in emails come from. Must be on a domain you verified in Resend.
+    "MAIL_FROM": "Screenwriter <onboarding@resend.dev>"
+  }
+}

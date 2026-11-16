@@ -1,0 +1,3 @@
+DEV_EMAIL=author@example.com
+# Local development only. With this set, the sign-in code is returned by the API instead of emailed.
+# Never set DEV_EMAIL in production.
