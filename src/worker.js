@@ -1,5 +1,6 @@
 import { verifyAccess } from './access.js';
 import { ScriptRoom } from './room.js';
+import { SCHEMA } from './schema.js';
 import { SESSION_COOKIE, sessionUser, requestCode, verifyCode, logout, cleanup } from './auth.js';
 export { ScriptRoom };
 
@@ -47,6 +48,13 @@ export async function backup(env, now = new Date()) {
   return { day, owners: owners.length, scripts };
 }
 
+let ready = null;
+/** Creates any missing tables the first time this Worker instance runs, so a fresh database needs no manual step. */
+function ensureSchema(env) {
+  if (!ready) ready = env.DB.batch(SCHEMA.map((q) => env.DB.prepare(q))).catch((e) => { ready = null; throw e; });
+  return ready;
+}
+
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(backup(env).then((r) => console.log('backup', JSON.stringify(r))));
@@ -59,6 +67,12 @@ export default {
       // Block other websites from acting as a signed-in user: browsers send Origin on writes and WebSocket upgrades.
       const origin = request.headers.get('origin');
       if (origin && origin !== url.origin && (request.method !== 'GET' || request.headers.get('upgrade'))) return json({ error: 'forbidden' }, 403);
+      await ensureSchema(env);
+      if (url.pathname === '/api/health') {
+        const missing = [!env.RESEND_API_KEY && 'RESEND_API_KEY', !env.AUTH_SECRET && 'AUTH_SECRET', !env.BACKUPS && 'BACKUPS bucket'].filter(Boolean);
+        await env.DB.prepare('SELECT 1').first();
+        return json({ ok: true, database: true, missing });
+      }
       if (url.pathname.startsWith('/api/auth/')) return await authRoute(request, env, url);
       const me = await identify(request, env);
       if (!me) return json({ error: 'unauthorized' }, 401);

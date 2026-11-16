@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+- Tables are created automatically on first use (no manual database step)
+- `/api/health` shows whether the database and secrets are set up
+- Sign in refuses to run without `AUTH_SECRET` (no built-in fallback secret on a real site)
+- Deployment guide rewritten for deploying from GitHub in the Cloudflare dashboard
+
 ## 0.6.0
 - Inter (app) and Courier Prime (script) self-hosted, with preload and offline cache
 - Library home matches the new design: compact header, slide-out sidebar, orange accent, colored script tiles

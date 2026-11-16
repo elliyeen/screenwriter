@@ -215,6 +215,10 @@ with sync_playwright() as pw:
     log = open('/tmp/wdev.log').read() if os.path.exists('/tmp/wdev.log') else ''
     check('nightly backup job ran and copied scripts', 'backup {"day"' in log and '"scripts":' in log, log[-300:])
 
+    # ---- health check ----
+    h = json.loads(urllib.request.urlopen(B + '/api/health').read())
+    check('health check answers without signing in and reports the database', h.get('ok') is True and h.get('database') is True, h)
+
     # ---- sign in with an email code ----
     def post(path, body, hdr=None):
         rq = urllib.request.Request(B + path, data=json.dumps(body).encode(), headers={'content-type': 'application/json', 'cf-connecting-ip': FAKE_IP, **(hdr or {})}, method='POST')

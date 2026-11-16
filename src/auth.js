@@ -9,6 +9,9 @@ export const SESSION_COOKIE = 'sw_session';
 const enc = new TextEncoder();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 
+const setupOk = (env) => Boolean(env.AUTH_SECRET || env.DEV_EMAIL); // never fall back to a built-in secret on a real site
+const NOT_READY = { status: 503, data: { error: 'Sign in is not set up yet. The site owner needs to finish setup.' } };
+
 async function hmac(env, text) {
   const key = await crypto.subtle.importKey('raw', enc.encode(env.AUTH_SECRET || 'dev-only-secret'), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   return hex(await crypto.subtle.sign('HMAC', key, enc.encode(text)));
@@ -35,7 +38,7 @@ function cookieHeader(request, value, maxAge) {
 
 /** Who is signed in from the session cookie, or null. */
 export async function sessionUser(token, env, now = Date.now()) {
-  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
+  if (!setupOk(env) || !token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const row = await env.DB.prepare('SELECT email, expires FROM sessions WHERE hash = ?').bind(await hmac(env, 's:' + token)).first();
   if (!row || row.expires < now) return null;
   return row.email;
@@ -61,6 +64,7 @@ async function sendMail(env, to, code) {
 }
 
 export async function requestCode(request, env, body, now = Date.now()) {
+  if (!setupOk(env)) return NOT_READY;
   const email = normEmail(body && body.email);
   if (!EMAIL_RE.test(email) || email.length > 254) return { status: 400, data: { error: 'Enter a valid email address.' } };
   const ip = request.headers.get('cf-connecting-ip') || 'local';
@@ -76,12 +80,13 @@ export async function requestCode(request, env, body, now = Date.now()) {
     .bind(email, await hmac(env, 'c:' + email + ':' + code), now + CODE_TTL).run();
   if (env.RESEND_API_KEY) await sendMail(env, email, code);
   else if (env.DEV_EMAIL) return { status: 200, data: { ok: true, devCode: code } }; // local development only
-  else throw new Error('RESEND_API_KEY is not set');
+  else return { status: 503, data: { error: 'Email sending is not set up yet. The site owner needs to add the email key.' } };
   // same answer whether or not the address has an account
   return { status: 200, data: { ok: true } };
 }
 
 export async function verifyCode(request, env, body, now = Date.now()) {
+  if (!setupOk(env)) return NOT_READY;
   const email = normEmail(body && body.email);
   const code = String((body && body.code) || '').replace(/\s/g, '');
   const bad = { status: 400, data: { error: 'That code did not work. Check it or ask for a new one.' } };

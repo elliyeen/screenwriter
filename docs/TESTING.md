@@ -12,7 +12,6 @@ Playwright (Python) with Google Chrome, axe-core for accessibility, and screensh
 Run:
 ```
 pip install playwright pillow
-npm run db:local
 npx wrangler dev --local --port 8799 --test-scheduled     # terminal 1
 npm run test:e2e                                          # terminal 2
 ```

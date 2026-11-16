@@ -1,5 +1,5 @@
 {
-  "name": "screenwriter",
+  "name": "screenwriter", // must match the Worker name in Cloudflare
   "main": "src/worker.js",
   "compatibility_date": "2026-11-01",
   "assets": {

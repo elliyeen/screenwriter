@@ -35,8 +35,8 @@ In local development the sign-in code is shown by the API instead of being email
 
 ## Deploy
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short: create a D1 database and an R2 bucket, set two secrets
-(`RESEND_API_KEY`, `AUTH_SECRET`), verify a sending domain with Resend, then `npx wrangler deploy`.
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). In short: create a D1 database and an R2 bucket in the Cloudflare dashboard, connect this GitHub repo as a Worker, add two secrets
+(`RESEND_API_KEY`, `AUTH_SECRET`), and verify a sending domain with Resend. After that, every push to the repo deploys. `/api/health` tells you what is still missing.
 
 ## Documentation
 
