@@ -103,6 +103,16 @@ with sync_playwright() as pw:
     check('New Script creates scripts', p.locator('.scard').count() == 3, p.locator('.scard .ct').all_inner_texts())
     check('page count and type on card', 'TV Series • 1 page' in p.inner_text('.scard:has-text("Night Shift")'))
 
+    # ---- change cover ----
+    p.click('.scard:has-text("Night Shift") .dots'); p.click('#ctx [data-act=cover]'); p.wait_for_timeout(200)
+    p.click('#ctx .sw[aria-label=Orange]'); p.wait_for_timeout(1500)
+    check('cover color can be changed from the card menu', p.locator('.scard:has-text("Night Shift") .cover.c3').count() == 1)
+    srv = [x for x in api('/api/scripts')['scripts'] if x['title'] == 'Night Shift'][0]
+    check('cover choice is saved to the account', json.loads(srv['meta']).get('cover') == 3 if isinstance(srv['meta'], str) else srv['meta'].get('cover') == 3, srv['meta'])
+    p.click('.scard:has-text("Night Shift")'); p.click('#dCover'); p.click('#ctx .sw[aria-label=Teal]'); p.wait_for_timeout(300)
+    check('cover can also be changed from the details panel', p.locator('.scard:has-text("Night Shift") .cover.c1').count() == 1)
+    check('sidebar has no illustration', p.locator('.promo svg').count() == 0)
+
     # ---- select, details, open ----
     p.click('.scard:has-text("The Long Road")'); p.wait_for_timeout(200)
     check('click selects and fills details', 'The Long Road' in p.inner_text('#details h2') and p.locator('.scard.sel').count() == 1)

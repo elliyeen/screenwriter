@@ -125,7 +125,8 @@ function pagesOf(s) {
 function coverHtml(s) {
   let h = 0;
   for (const c of s.id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return `<div class="cover c${h % 6}">${metaOf(s).fav && !s.deleted ? '<i class="star" title="Favorite">★</i>' : ''}<span>${esc(scriptName(s.text))}</span></div>`;
+  const pick = metaOf(s).cover;
+  return `<div class="cover c${Number.isInteger(pick) && pick >= 0 && pick < 6 ? pick : h % 6}">${metaOf(s).fav && !s.deleted ? '<i class="star" title="Favorite">★</i>' : ''}<span>${esc(scriptName(s.text))}</span></div>`;
 }
 function ringHtml(s) {
   const n = metaOf(s).ms.length;
@@ -212,6 +213,7 @@ function renderDetails() {
       </div>
       <button class="dfav" id="dFav" aria-label="${m.fav ? 'Remove from favorites' : 'Add to favorites'}" aria-pressed="${!!m.fav}"${s.deleted ? ' disabled' : ''}>${m.fav ? '★' : '☆'}</button>
     </div>
+    ${s.deleted || s.role === 'reviewer' ? '' : '<button class="link" id="dCover">Change cover</button>'}
     <div class="dsec"><h3>Progress <span>${done ? Math.round((done / MILES.length) * 100) + '%' : ''}</span></h3>
       ${done ? `<div class="bar2"><i style="width:${(done / MILES.length) * 100}%"></i></div>` : '<p class="note">Tick a milestone when you finish it.</p>'}
       ${MILES.map(([v, l]) => `<label class="mile"><input type="checkbox" data-ms="${v}"${m.ms.includes(v) ? ' checked' : ''}${ro}>${l}</label>`).join('')}
@@ -314,7 +316,7 @@ function toggleFav(s) { const m = metaOf(s); m.fav = !m.fav; touchMeta(s); rende
 function openMenu(s, anchor) {
   const k = esc(keyOf(s));
   const items = s.deleted ? [['restore', 'Restore']]
-    : [['open', 'Open in Writer'], ['rename', 'Rename…'], ['dup', 'Duplicate'], ['fav', metaOf(s).fav ? 'Remove from Favorites' : 'Add to Favorites'], ['pdf', 'Export PDF'], ['fountain', 'Export .fountain']].concat(s.owner ? [] : [['share', 'Share…'], ['trash', 'Move to Trash']]);
+    : [['open', 'Open in Writer'], ['rename', 'Rename…'], ['dup', 'Duplicate'], ['fav', metaOf(s).fav ? 'Remove from Favorites' : 'Add to Favorites'], ['cover', 'Change cover…'], ['pdf', 'Export PDF'], ['fountain', 'Export .fountain']].concat(s.owner ? [] : [['share', 'Share…'], ['trash', 'Move to Trash']]);
   const m = $('ctx');
   m.innerHTML = items.map(([a, l]) => `<button role="menuitem" data-act="${a}" data-key="${k}">${l}</button>`).join('');
   m.hidden = false;
@@ -324,6 +326,29 @@ function openMenu(s, anchor) {
   m.firstElementChild.focus();
 }
 const closeCtx = () => { $('ctx').hidden = true; };
+const COVERS = ['Blue', 'Teal', 'Green', 'Orange', 'Rose', 'Navy'];
+function openCoverPicker(s, anchor) {
+  if (s.role === 'reviewer' || s.deleted) return;
+  const k = esc(keyOf(s));
+  const m = $('ctx');
+  m.innerHTML = '<div class="swhead">Cover color</div><div class="swrow">' + COVERS.map((n, i) => `<button class="sw c${i}" data-cover="${i}" data-key="${k}" aria-label="${n}" aria-pressed="${metaOf(s).cover === i}"></button>`).join('') +
+    `</div><button role="menuitem" data-cover="auto" data-key="${k}">Automatic</button>`;
+  m.hidden = false;
+  const r = (anchor || document.querySelector(`.scard[data-key="${k}"]`) || document.body).getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - 228, r.left + 8)) + 'px';
+  m.style.top = Math.max(8, Math.min(innerHeight - 130, r.top + 40)) + 'px';
+  m.querySelector('.sw').focus();
+}
+$('ctx').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-cover]');
+  if (!b) return;
+  const s = byKey(b.dataset.key);
+  closeCtx();
+  if (!s || s.role === 'reviewer') return;
+  if (b.dataset.cover === 'auto') delete metaOf(s).cover; else metaOf(s).cover = Number(b.dataset.cover);
+  touchMeta(s);
+  renderLibrary();
+});
 $('ctx').addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
   if (!b) return;
@@ -335,6 +360,7 @@ $('ctx').addEventListener('click', (e) => {
   else if (a === 'rename') openRename(s);
   else if (a === 'dup') duplicateScript(s);
   else if (a === 'fav') toggleFav(s);
+  else if (a === 'cover') openCoverPicker(s);
   else if (a === 'pdf') exportPdf(s);
   else if (a === 'fountain') download((scriptName(s.text).replace(/[^\w\- ]+/g, '').trim() || 'screenplay') + '.fountain', new Blob([s.text], { type: 'text/plain' }));
   else if (a === 'share') openShare(s);
@@ -435,6 +461,7 @@ $('details').addEventListener('click', (e) => {
   else if (id === 'dRestore') restoreScript(s);
   else if (id === 'dHistory') openHistory(s);
 });
+$('details').addEventListener('click', (e) => { if (e.target.id === 'dCover') { const s = byKey(lib().sel); if (s) openCoverPicker(s, e.target); } });
 $('details').addEventListener('change', (e) => {
   const s = byKey(lib().sel);
   if (!s) return;

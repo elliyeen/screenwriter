@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+- Change a script's cover color (card menu or details panel); saved to the account
+- Removed the sidebar illustration
+
 ## 0.6.1
 - Tables are created automatically on first use (no manual database step)
 - `/api/health` shows whether the database and secrets are set up
